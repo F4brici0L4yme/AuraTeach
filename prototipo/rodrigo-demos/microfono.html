@@ -1,1 +1,251 @@
-<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Demo voz celular-servidor</title><style>body{font:16px/1.5 Arial;max-width:700px;margin:32px auto;padding:0 18px;color:#222}textarea,button{padding:10px;margin:6px 0}textarea{display:block;width:min(100%,600px);height:90px}#result{padding:12px;background:#f3f3f3}</style><h1>Micrófono del teléfono → servidor</h1><p>Dicta una pregunta o escríbela como alternativa.</p><button id="record">🎙 Dictar</button><textarea id="text" placeholder="Transcripción o pregunta escrita"></textarea><button id="send">Enviar pregunta al servidor</button><p id="result" aria-live="polite">Esperando pregunta.</p><script>const text=document.querySelector('#text');document.querySelector('#record').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){document.querySelector('#result').textContent='Reconocimiento de voz no disponible; escribe la pregunta.';return}const r=new SR();r.lang='es-PE';r.onresult=e=>text.value=e.results[0][0].transcript;r.onerror=()=>document.querySelector('#result').textContent='No se pudo usar el micrófono; escribe la pregunta.';r.start()};document.querySelector('#send').onclick=async()=>{try{const r=await fetch('/api/events',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({type:'voice-question',question:text.value,source:'phone'})}),d=await r.json();document.querySelector('#result').textContent=d.ok?`Servidor recibió: ${d.event.question}`:'No se pudo enviar.'}catch{document.querySelector('#result').textContent='No se pudo conectar al servidor.'}};</script></html>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AuraTeach · Demo de voz</title>
+  <style>
+    :root{font:16px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1d293b;background:#f4f6fa;color-scheme:light;--ink:#1d293b;--muted:#68758b;--line:#dce3ee;--blue:#dce7ff;--accent:#5579c7;--surface:#fff;--soft:#f1f4f9;--shadow:0 18px 50px #23345312}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;padding:32px 16px;background:radial-gradient(ellipse at 50% 0,#fff,#f2f5fa 68%);color:var(--ink)}button,textarea{font:inherit}button{border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);padding:10px 14px;cursor:pointer;transition:transform .15s,background .15s}button:hover:not(:disabled){background:#e8eef8}button:active:not(:disabled){transform:scale(.98)}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,textarea:focus-visible{outline:3px solid #9cb8f0;outline-offset:2px}.primary{background:var(--blue);border-color:#c9d8f7;color:#24365d;font-weight:700}.shell{width:min(760px,100%);margin:0 auto}.brand{font-size:.84rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:800}.card{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}.head{padding:24px 26px 18px;border-bottom:1px solid var(--line)}h1{font-size:clamp(1.5rem,4vw,2rem);line-height:1.15;margin:4px 0 8px}.intro{margin:0;color:var(--muted)}.connection{display:flex;align-items:center;gap:8px;margin-top:15px;color:var(--muted);font-size:.88rem}.dot{width:9px;height:9px;border-radius:50%;background:#c4ccd8}.dot.ok{background:#38a987}.dot.bad{background:#dd7c78}.body{padding:22px 26px 26px}.actions{display:flex;flex-wrap:wrap;gap:9px}.actions .primary{min-width:190px}.status{margin:12px 0 0;color:var(--muted);font-size:.9rem;min-height:1.4em}.transcript-card,.answer-card{margin-top:18px;padding:15px 16px;border:1px solid var(--line);border-radius:15px;background:#fbfcfe}.label{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:.77rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.transcript{min-height:42px;margin:8px 0 0;white-space:pre-wrap}.placeholder{color:#9aa5b7}.answer-card{background:#f7f9fd}.answer{min-height:44px;margin:9px 0 0;white-space:pre-wrap}.response-actions{display:flex;gap:8px;margin-top:12px}.manual{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}.manual label{display:block;margin-bottom:7px;font-weight:700;font-size:.9rem}.manual textarea{display:block;width:100%;min-height:78px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:11px 12px;color:var(--ink);background:white}.manual button{margin-top:9px}.note{margin:14px 0 0;color:var(--muted);font-size:.82rem}.error{color:#a34343}.listening{color:#287d68}.hidden{display:none!important}
+    @media(max-width:520px){body{padding:14px 10px}.head,.body{padding:19px}.actions>*{flex:1}.response-actions>*{flex:1}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">AuraTeach · laboratorio de voz</div>
+    <section class="card" aria-labelledby="title">
+      <header class="head">
+        <h1 id="title">Pregunta hablando</h1>
+        <p class="intro">Dicta una pregunta, revisa la transcripción y recibe una respuesta de DeepSeek.</p>
+        <div class="connection" aria-live="polite"><span id="connectionDot" class="dot"></span><span id="connectionStatus">Conectando con AuraTeach…</span></div>
+      </header>
+      <div class="body">
+        <div class="actions">
+          <button id="recordButton" class="primary" type="button" disabled>🎙 Iniciar dictado</button>
+          <button id="stopButton" class="hidden" type="button">Terminar y consultar</button>
+          <button id="cancelButton" class="hidden" type="button">Cancelar dictado</button>
+        </div>
+        <p id="status" class="status" role="status" aria-live="polite">Inicia el dictado cuando estés listo.</p>
+
+        <section class="transcript-card" aria-labelledby="transcriptLabel">
+          <div class="label"><span id="transcriptLabel">Lo que dijiste</span><span id="transcriptState">Aún no hay dictado</span></div>
+          <p id="transcript" class="transcript placeholder">Tu transcripción aparecerá aquí.</p>
+        </section>
+
+        <section class="answer-card" aria-labelledby="answerLabel">
+          <div class="label"><span id="answerLabel">Respuesta del tutor</span><span id="answerState">DeepSeek</span></div>
+          <p id="answer" class="answer placeholder">La respuesta aparecerá aquí.</p>
+          <div class="response-actions">
+            <button id="speakButton" type="button" disabled>🔊 Escuchar respuesta</button>
+            <button id="stopAudioButton" type="button" disabled>■ Detener audio</button>
+          </div>
+        </section>
+
+        <form id="manualForm" class="manual">
+          <label for="manualQuestion">Si el micrófono no está disponible, puedes escribir:</label>
+          <textarea id="manualQuestion" placeholder="Escribe aquí tu pregunta…"></textarea>
+          <button id="sendTextButton" class="primary" type="submit" disabled>Enviar pregunta</button>
+        </form>
+        <p class="note">El navegador convierte tu voz en texto; AuraTeach envía ese texto a DeepSeek y guarda la pregunta en el registro local. No se almacena una grabación. El audio de la respuesta se reproduce solo cuando tocas «Escuchar respuesta».</p>
+      </div>
+    </section>
+  </main>
+  <script type="module">
+    import { chooseSpanishVoice } from './voice-agent.mjs';
+
+    const $ = selector => document.querySelector(selector);
+    const recordButton = $('#recordButton');
+    const stopButton = $('#stopButton');
+    const cancelButton = $('#cancelButton');
+    const transcript = $('#transcript');
+    const answer = $('#answer');
+    const status = $('#status');
+    const speakButton = $('#speakButton');
+    const stopAudioButton = $('#stopAudioButton');
+    const sendTextButton = $('#sendTextButton');
+    let recognition = null;
+    let listening = false;
+    let cancelled = false;
+    let finalTranscript = '';
+    let answerText = '';
+    let sending = false;
+    let captureError = '';
+
+    function setStatus(message, error = false) {
+      status.textContent = message;
+      status.classList.toggle('error', error);
+      status.classList.toggle('listening', listening && !error);
+    }
+
+    async function connectDemoSession() {
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ alias: 'Demo de voz', role: 'student' })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No se pudo iniciar la sesión de demostración.');
+        const statusResponse = await fetch('/api/status');
+        const config = await statusResponse.json();
+        $('#connectionDot').classList.toggle('ok', Boolean(config.llmConfigured));
+        $('#connectionDot').classList.toggle('bad', !config.llmConfigured);
+        $('#connectionStatus').textContent = config.llmConfigured
+          ? `Sesión de prueba lista · ${config.llmModel}`
+          : 'Sesión lista · DeepSeek en modo simulado';
+        recordButton.disabled = false;
+        sendTextButton.disabled = false;
+      } catch (error) {
+        $('#connectionDot').classList.add('bad');
+        $('#connectionStatus').textContent = 'No se pudo conectar con AuraTeach';
+        setStatus(error.message, true);
+      }
+    }
+
+    function showTranscript(value, interim = false) {
+      const text = String(value || '').trim();
+      transcript.textContent = text || 'Tu transcripción aparecerá aquí.';
+      transcript.classList.toggle('placeholder', !text);
+      $('#transcriptState').textContent = interim ? 'Escuchando…' : (text ? 'Transcripción lista' : 'Aún no hay dictado');
+    }
+
+    async function askTutor(question, source) {
+      const clean = String(question || '').trim();
+      if (!clean || sending) return;
+      sending = true;
+      answerText = '';
+      answer.textContent = 'DeepSeek está preparando una respuesta…';
+      answer.classList.add('placeholder');
+      $('#answerState').textContent = 'Pensando…';
+      speakButton.disabled = true;
+      stopAudioButton.disabled = true;
+      setStatus('Enviando la pregunta al tutor…');
+      try {
+        const response = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ question: clean, model: 'Exploración oral', ownModel: false })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'El tutor no pudo responder.');
+        answerText = data.answer || 'No llegó texto de respuesta.';
+        answer.textContent = answerText;
+        answer.classList.remove('placeholder');
+        $('#answerState').textContent = data.mode === 'live' ? 'DeepSeek · respuesta recibida' : 'Modo de prueba';
+        speakButton.disabled = !answerText;
+        setStatus(source === 'voice' ? 'Dictado enviado. Revisa la transcripción y la respuesta.' : 'Pregunta enviada.');
+      } catch (error) {
+        answer.textContent = error.message || 'No se pudo conectar con el tutor.';
+        answer.classList.remove('placeholder');
+        $('#answerState').textContent = 'No se pudo responder';
+        setStatus(error.message || 'No se pudo conectar con el tutor.', true);
+      } finally {
+        sending = false;
+      }
+    }
+
+    function startDictation() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        setStatus('Este navegador no ofrece reconocimiento de voz. Puedes escribir la pregunta abajo.', true);
+        return;
+      }
+      if (listening || sending) return;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'es-PE';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      cancelled = false;
+      finalTranscript = '';
+      captureError = '';
+      listening = true;
+      showTranscript('', true);
+      recordButton.classList.add('hidden');
+      stopButton.classList.remove('hidden');
+      cancelButton.classList.remove('hidden');
+      setStatus('Escuchando. Al terminar, toca «Terminar y consultar».');
+
+      recognition.onresult = event => {
+        let interim = '';
+        for (let index = event.resultIndex; index < event.results.length; index++) {
+          const phrase = event.results[index][0]?.transcript?.trim() || '';
+          if (!phrase) continue;
+          if (event.results[index].isFinal) finalTranscript = [finalTranscript, phrase].filter(Boolean).join(' ');
+          else interim = [interim, phrase].filter(Boolean).join(' ');
+        }
+        showTranscript([finalTranscript, interim].filter(Boolean).join(' '), Boolean(interim));
+      };
+      recognition.onerror = event => {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') captureError = 'Permite el micrófono para usar el dictado.';
+        else if (event.error === 'no-speech') captureError = 'No se detectó voz. Inténtalo otra vez o escribe tu pregunta.';
+        else if (event.error !== 'aborted') captureError = 'El dictado falló. Puedes escribir la pregunta.';
+        if (captureError) setStatus(captureError, true);
+      };
+      recognition.onend = () => {
+        listening = false;
+        recordButton.classList.remove('hidden');
+        stopButton.classList.add('hidden');
+        cancelButton.classList.add('hidden');
+        if (captureError) { showTranscript(finalTranscript); setStatus(captureError, true); return; }
+        if (!cancelled && finalTranscript.trim()) {
+          showTranscript(finalTranscript);
+          void askTutor(finalTranscript, 'voice');
+        } else if (!cancelled) {
+          setStatus('No se reconoció una frase completa. Inténtalo otra vez o escribe tu pregunta.', true);
+          showTranscript('');
+        }
+      };
+      try { recognition.start(); }
+      catch { listening = false; recordButton.classList.remove('hidden'); stopButton.classList.add('hidden'); cancelButton.classList.add('hidden'); setStatus('No se pudo iniciar el micrófono.', true); }
+    }
+
+    function stopDictation(shouldSubmit) {
+      if (!recognition) return;
+      cancelled = !shouldSubmit;
+      if (shouldSubmit) setStatus('Cerrando dictado…');
+      else { showTranscript(''); setStatus('Dictado cancelado.'); }
+      recognition.stop();
+      if (!shouldSubmit) recognition.onend = () => {
+        listening = false;
+        recordButton.classList.remove('hidden');
+        stopButton.classList.add('hidden');
+        cancelButton.classList.add('hidden');
+      };
+    }
+
+    recordButton.addEventListener('click', startDictation);
+    stopButton.addEventListener('click', () => stopDictation(true));
+    cancelButton.addEventListener('click', () => stopDictation(false));
+    $('#manualForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const question = $('#manualQuestion').value.trim();
+      if (!question) { setStatus('Escribe una pregunta antes de enviarla.', true); return; }
+      showTranscript(question);
+      void askTutor(question, 'text');
+    });
+
+    speakButton.addEventListener('click', () => {
+      if (!answerText || !window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+        setStatus('La lectura en voz alta no está disponible en este navegador.', true);
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(answerText);
+      utterance.lang = 'es-PE';
+      const voice = chooseSpanishVoice(window.speechSynthesis.getVoices());
+      if (voice) utterance.voice = voice;
+      utterance.onstart = () => { setStatus('Reproduciendo la respuesta…'); stopAudioButton.disabled = false; };
+      utterance.onend = () => { setStatus('Respuesta disponible para volver a escuchar.'); stopAudioButton.disabled = true; };
+      utterance.onerror = () => { setStatus('No se pudo reproducir el audio; la respuesta sigue visible.', true); stopAudioButton.disabled = true; };
+      window.speechSynthesis.speak(utterance);
+    });
+    stopAudioButton.addEventListener('click', () => {
+      window.speechSynthesis?.cancel();
+      stopAudioButton.disabled = true;
+      setStatus('Reproducción detenida. La respuesta sigue visible.');
+    });
+
+    void connectDemoSession();
+  </script>
+</body>
+</html>

@@ -30,3 +30,18 @@ test('canvas tool validation only accepts verified pieces on the prepared model'
   assert.equal(validateCanvasAction({ action: 'set_exploded', value: true }, { model, isOwnModel: true, parts }), null);
   assert.equal(validateCanvasAction({ action: 'run_python' }, { model, isOwnModel: false, parts }), null);
 });
+
+test('general arrows and camera actions work without a verified part manifest', () => {
+  assert.deepEqual(validateCanvasAction({ action: 'arrow', message: 'Observa esta zona' }, { model: null, isOwnModel: true, parts: [] }), { type: 'arrow', message: 'Observa esta zona' });
+  assert.deepEqual(validateCanvasAction({ action: 'zoom' }, { model: null, isOwnModel: true, parts: [] }), { type: 'zoom' });
+  assert.deepEqual(validateCanvasAction({ action: 'reset' }, { model: null, isOwnModel: true, parts: [] }), { type: 'reset' });
+  assert.equal(validateCanvasAction({ action: 'focus_part', partId: 'inventada' }, { model: null, isOwnModel: true, parts: [] }), null);
+});
+
+test('prepared model only accepts the true exploded state when parts are verified', () => {
+  const context = { model: { id: 'lapicero', disassemblable: true }, isOwnModel: false, parts: [{ id: 'part-1' }] };
+  assert.deepEqual(validateCanvasAction({ action: 'set_exploded', value: true }, context), { type: 'set_exploded', value: true });
+  assert.deepEqual(validateCanvasAction({ action: 'set_exploded', value: false }, context), { type: 'set_exploded', value: false });
+  assert.equal(validateCanvasAction({ action: 'set_exploded', value: 'true' }, context), null);
+  assert.equal(validateCanvasAction({ action: 'set_exploded', value: true }, { ...context, parts: [] }), null);
+});

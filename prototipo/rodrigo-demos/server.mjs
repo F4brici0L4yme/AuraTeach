@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { seedDemoActivity } from './demo-seed.mjs';
-import { deepSeekChatCompletion, validateCanvasAction } from './deepseek-client.mjs';
+import { deepSeekChatCompletion, DeepSeekRequestError, validateCanvasAction } from './deepseek-client.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
@@ -150,12 +150,21 @@ async function handler(req, res) {
           if (ownModel) instructions += '\n\nMODELO PROPIO: no des por hecho piezas ocultas ni intentes diseccionarlo. Basa la respuesta solo en la imagen enviada y describe incertidumbres.';
           if (selected) instructions += `\n\nPIEZA SELECCIONADA POR EL ESTUDIANTE: ${selected.label}. ${selected.description}`;
           const { response: upstream, result } = await deepSeekChatCompletion({ apiKey, endpoint, model: llmModel, instructions, question, image, tools: toolList });
-          if (!upstream.ok) return send(res, 502, { error: 'DeepSeek no respondió. Revisa la API key y el saldo.' });
-          const message = result.choices?.[0]?.message; let action = null; const call = message?.tool_calls?.[0];
-          if (call?.function?.name === 'canvas_action') { try { action = validateCanvasAction(JSON.parse(call.function.arguments), { model, isOwnModel: ownModel, parts }); } catch {} }
-          if (action) log(user, 'canvas_action', action.type, model?.id || '');
-          return send(res, 200, { answer: message?.content || 'Mira el detalle que he señalado. ¿Qué observas?', action, mode: 'live' });
-        } catch { return send(res, 502, { error: 'No se pudo conectar con DeepSeek.' }); }
+          const message = result.choices?.[0]?.message; let action = null; const call = message?.tool_calls?.find(item => item.function?.name === 'canvas_action');
+          if (call) { try { action = validateCanvasAction(JSON.parse(call.function.arguments), { model, isOwnModel: ownModel, parts }); } catch {} }
+          const answer = call && !action
+            ? 'No pude aplicar esa indicación a este modelo. Puedes elegir una pieza o preguntarme sobre lo que se ve.'
+            : String(message?.content || '').trim();
+          return send(res, 200, { answer, action, mode: 'live' });
+        } catch (error) {
+          if (error instanceof DeepSeekRequestError) {
+            // Keep provider diagnostics useful while never logging the key or raw request.
+            console.warn(`DeepSeek request failed: ${error.code}${error.status ? ` (HTTP ${error.status})` : ''}`);
+            return send(res, 502, { error: error.publicMessage || 'DeepSeek no pudo completar la solicitud.', code: error.code });
+          }
+          console.warn('DeepSeek request failed: unexpected_error');
+          return send(res, 502, { error: 'Ocurrió un problema al procesar la respuesta de DeepSeek. Inténtalo otra vez.', code: 'unexpected_error' });
+        }
       }
       const q = question.toLowerCase(); let action = null;
       if (!ownModel && model?.disassemblable && /separa|dise|interior|por dentro|corte/.test(q)) action = { type: 'set_exploded', value: true };

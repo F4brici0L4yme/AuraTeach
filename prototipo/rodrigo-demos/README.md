@@ -31,7 +31,10 @@ Puedes desactivar el seed de demostración con `AURATEACH_SEED_DEMO=false`. Para
 - Galería escolar de 3 × 3 con búsqueda y paginación. Incluye los GLB de `3d_lab_aurateach/assets/` y modelos anteriores.
 - Miniaturas renderizadas con Blender en `model-thumbnails/`; para volver a generarlas, sigue `BLENDER_MCP_SETUP.md`.
 - Canvas Three.js para inspeccionar GLB. El lapicero escolar permite separar y ensamblar mallas con nombre, enfocar piezas y moverlas. Los GLB propios se pueden explorar visualmente, sin disección automática.
-- Chat flotante con dictado del navegador. Toca la burbuja para iniciar la sesión de escucha; di «pregunta» y después la consulta, o di «pregunta: …» en una sola frase.
+- Chat flotante con escucha discreta: activa el micrófono con la burbuja, di «pregunta» y luego dicta, o di «pregunta: …» en una frase. Tras una pausa breve, la transcripción se envía al tutor.
+- Demo independiente en `/prototipo/rodrigo-demos/microfono.html`: muestra el dictado reconocido y la respuesta del tutor; un botón inicia la lectura en voz alta del navegador.
+- DeepSeek recibe la captura del canvas y la pieza seleccionada; sus acciones se validan contra las piezas disponibles antes de aplicarse. Los modelos sin manifiesto admiten solo zoom y señalización general.
+- Las respuestas a preguntas por voz se leen con la voz española disponible en el navegador y también quedan escritas en el chat. Las preguntas escritas no se leen automáticamente.
 - Dashboard docente con gráficas animadas, preguntas textuales, visitas, inspección de partes e informe imprimible/guardable como PDF.
 - Dashboard con datos sintéticos de 8 estudiantes y filtros para ver todo, solo demostración o solo actividad real. El PDF excluye los datos sintéticos de forma predeterminada; se pueden incluir marcando la opción.
 - SQLite local y sesiones de demostración por alias. **El acceso de docente/estudiante es simulado, no autenticación de producción.**
@@ -50,6 +53,7 @@ Desde esta carpeta ejecuta:
 ```sh
 node server.test.mjs
 node hand-gestures.test.mjs
+node voice-agent.test.mjs
 node deepseek-client.test.mjs
 node lapicero-parts.test.mjs
 ```
