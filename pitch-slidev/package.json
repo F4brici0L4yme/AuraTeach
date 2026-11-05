@@ -1,0 +1,1 @@
+{"name":"aurateach-hack4edu-pitch","private":true,"type":"module","scripts":{"dev":"slidev --open","build":"slidev build"},"dependencies":{"@slidev/cli":"53.0.0"},"devDependencies":{"@slidev/theme-default":"^0.25.0"}}

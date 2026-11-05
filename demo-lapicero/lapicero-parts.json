@@ -1,0 +1,500 @@
+{
+  "modelId": "lapicero",
+  "source": "Positions derived from lapicero.glb and lapicero-exploded.glb",
+  "parts": [
+    {
+      "nodeName": "Agarre estriado",
+      "originPosition": [
+        -75.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -83.5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Anclaje del clip",
+      "originPosition": [
+        46,
+        7,
+        0
+      ],
+      "explodedPosition": [
+        80,
+        7,
+        0
+      ]
+    },
+    {
+      "nodeName": "Banda frontal",
+      "originPosition": [
+        -62,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -62,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Banda trasera",
+      "originPosition": [
+        52,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        52,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Barril principal",
+      "originPosition": [
+        -5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Cartucho de tinta",
+      "originPosition": [
+        -12,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -4,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Clip · curva",
+      "originPosition": [
+        70.5,
+        9,
+        1
+      ],
+      "explodedPosition": [
+        104.5,
+        9,
+        1
+      ]
+    },
+    {
+      "nodeName": "Clip · extremo",
+      "originPosition": [
+        77,
+        7,
+        4.5
+      ],
+      "explodedPosition": [
+        111,
+        7,
+        4.5
+      ]
+    },
+    {
+      "nodeName": "Clip · tramo recto",
+      "originPosition": [
+        56.5,
+        10,
+        0
+      ],
+      "explodedPosition": [
+        90.5,
+        10,
+        0
+      ]
+    },
+    {
+      "nodeName": "Cono frontal",
+      "originPosition": [
+        -95.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -111.5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Corona pulsable",
+      "originPosition": [
+        82,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        107,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Depósito de tinta",
+      "originPosition": [
+        -7,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 01",
+      "originPosition": [
+        -75,
+        0,
+        -7.849999904632568
+      ],
+      "explodedPosition": [
+        -83,
+        0,
+        -7.849999904632568
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 02",
+      "originPosition": [
+        -75,
+        2.425783395767212,
+        -7.465793609619141
+      ],
+      "explodedPosition": [
+        -83,
+        2.425783395767212,
+        -7.465793609619141
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 03",
+      "originPosition": [
+        -75,
+        4.614114284515381,
+        -6.350783348083496
+      ],
+      "explodedPosition": [
+        -83,
+        4.614114284515381,
+        -6.350783348083496
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 04",
+      "originPosition": [
+        -75,
+        6.350783348083496,
+        -4.614114284515381
+      ],
+      "explodedPosition": [
+        -83,
+        6.350783348083496,
+        -4.614114284515381
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 05",
+      "originPosition": [
+        -75,
+        7.465793609619141,
+        -2.425783395767212
+      ],
+      "explodedPosition": [
+        -83,
+        7.465793609619141,
+        -2.425783395767212
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 06",
+      "originPosition": [
+        -75,
+        7.849999904632568,
+        0
+      ],
+      "explodedPosition": [
+        -83,
+        7.849999904632568,
+        0
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 07",
+      "originPosition": [
+        -75,
+        7.465793609619141,
+        2.425783395767212
+      ],
+      "explodedPosition": [
+        -83,
+        7.465793609619141,
+        2.425783395767212
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 08",
+      "originPosition": [
+        -75,
+        6.350783348083496,
+        4.614114284515381
+      ],
+      "explodedPosition": [
+        -83,
+        6.350783348083496,
+        4.614114284515381
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 09",
+      "originPosition": [
+        -75,
+        4.614114284515381,
+        6.350783348083496
+      ],
+      "explodedPosition": [
+        -83,
+        4.614114284515381,
+        6.350783348083496
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 10",
+      "originPosition": [
+        -75,
+        2.425783395767212,
+        7.465793609619141
+      ],
+      "explodedPosition": [
+        -83,
+        2.425783395767212,
+        7.465793609619141
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 11",
+      "originPosition": [
+        -75,
+        0,
+        7.849999904632568
+      ],
+      "explodedPosition": [
+        -83,
+        0,
+        7.849999904632568
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 12",
+      "originPosition": [
+        -75,
+        -2.425783395767212,
+        7.465793609619141
+      ],
+      "explodedPosition": [
+        -83,
+        -2.425783395767212,
+        7.465793609619141
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 13",
+      "originPosition": [
+        -75,
+        -4.614114284515381,
+        6.350783348083496
+      ],
+      "explodedPosition": [
+        -83,
+        -4.614114284515381,
+        6.350783348083496
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 14",
+      "originPosition": [
+        -75,
+        -6.350783348083496,
+        4.614114284515381
+      ],
+      "explodedPosition": [
+        -83,
+        -6.350783348083496,
+        4.614114284515381
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 15",
+      "originPosition": [
+        -75,
+        -7.465793609619141,
+        2.425783395767212
+      ],
+      "explodedPosition": [
+        -83,
+        -7.465793609619141,
+        2.425783395767212
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 16",
+      "originPosition": [
+        -75,
+        -7.849999904632568,
+        0
+      ],
+      "explodedPosition": [
+        -83,
+        -7.849999904632568,
+        0
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 17",
+      "originPosition": [
+        -75,
+        -7.465793609619141,
+        -2.425783395767212
+      ],
+      "explodedPosition": [
+        -83,
+        -7.465793609619141,
+        -2.425783395767212
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 18",
+      "originPosition": [
+        -75,
+        -6.350783348083496,
+        -4.614114284515381
+      ],
+      "explodedPosition": [
+        -83,
+        -6.350783348083496,
+        -4.614114284515381
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 19",
+      "originPosition": [
+        -75,
+        -4.614114284515381,
+        -6.350783348083496
+      ],
+      "explodedPosition": [
+        -83,
+        -4.614114284515381,
+        -6.350783348083496
+      ]
+    },
+    {
+      "nodeName": "Estría de goma 20",
+      "originPosition": [
+        -75,
+        -2.425783395767212,
+        -7.465793609619141
+      ],
+      "explodedPosition": [
+        -83,
+        -2.425783395767212,
+        -7.465793609619141
+      ]
+    },
+    {
+      "nodeName": "Guía del resorte",
+      "originPosition": [
+        -41.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -26.5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Punta cónica de escritura",
+      "originPosition": [
+        -108.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -124.5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Punta del cartucho",
+      "originPosition": [
+        -100,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        -92,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Resorte de retorno",
+      "originPosition": [
+        0,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        15,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Tapa trasera",
+      "originPosition": [
+        72.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        97.5,
+        0,
+        0
+      ]
+    },
+    {
+      "nodeName": "Émbolo del pulsador",
+      "originPosition": [
+        57.5,
+        0,
+        0
+      ],
+      "explodedPosition": [
+        82.5,
+        0,
+        0
+      ]
+    }
+  ]
+}

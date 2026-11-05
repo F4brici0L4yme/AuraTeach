@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reparto de tareas · La escuela es un laboratorio</title>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 32px auto;
+      padding: 0 20px;
+      color: #222;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
+    }
+    h1 { font-size: 28px; }
+    details {
+      margin: 12px 0;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    summary { cursor: pointer; font-weight: bold; }
+    li { margin: 10px 0; }
+    .flow { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 18px 0; }
+    .block { border: 1px solid #ccc; border-radius: 5px; padding: 12px 14px; }
+    .block h3 { font-size: 16px; margin: 0 0 4px; }
+    .block p { margin: 0; }
+    .arrow { text-align: center; color: #666; line-height: 1; }
+  </style>
+</head>
+<body>
+  <h1>Reparto de tareas</h1>
+
+  <details>
+    <summary>Rodrigo</summary>
+    <ul>
+      <li><strong>Tarea:</strong> desarrollar el módulo de autenticación.<br><strong>Entregable:</strong> inicio de sesión e identidad de usuario para la demo.</li>
+      <li><strong>Tarea:</strong> desarrollar accesibilidad y registro de datos.<br><strong>Entregable:</strong> interacciones y hallazgos registrables en formatos accesibles.</li>
+      <li><strong>Tarea:</strong> crear la interfaz para interactuar con la API de un modelo de IA.<br><strong>Entregable:</strong> una pregunta enviada al modelo y su respuesta visible en la interfaz.</li>
+      <li><strong>Tarea:</strong> construir el canvas para cargar e interactuar con archivos GLB.<br><strong>Entregable:</strong> canvas que carga el modelo seleccionado y admite anotaciones o acciones.</li>
+      <li><strong>Tarea:</strong> preparar MCP para interacción en modo live.<br><strong>Entregable:</strong> flujo de demostración con una interacción live comprobable.</li>
+      <li><strong>Tarea:</strong> conectar el micrófono del teléfono con el servidor.<br><strong>Entregable:</strong> una pregunta hablada que llega al servidor y aparece en la demo.</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Pamelo</summary>
+    <ul>
+      <li><strong>Tarea:</strong> implementar el control Air Mouse.<br><strong>Entregable:</strong> prototipo que controla el puntero y permite seleccionar en un modelo GLB.</li>
+      <li><strong>Tarea:</strong> implementar visión computacional para seguimiento de gestos de la mano.<br><strong>Entregable:</strong> control por gestos para manipular el modelo GLB.</li>
+      <li><strong>Tarea:</strong> probar ambas interacciones con objetos GLB en su programa.<br><strong>Entregable:</strong> prueba comparativa y notas de compatibilidad para integrar con el canvas.</li>
+    </ul>
+  </details>
+
+  <details>
+    <summary>Katherine</summary>
+    <ul>
+      <li><strong>Tarea:</strong> buscar un modelo 3D de ingeniería ambiental adecuado para estudiantes.<br><strong>Entregable:</strong> archivo GLB seleccionado, fuente y licencia, y breve justificación educativa.</li>
+      <li><strong>Tarea:</strong> realizar la prueba integral del prototipo en la pantalla grande.<br><strong>Entregable:</strong> una pasada del flujo completo y una lista corta de problemas encontrados.</li>
+      <li><strong>Tarea:</strong> preparar el documento informativo para los jurados.<br><strong>Entregable:</strong> un documento breve y organizado con los retos abordados, la problemática, la justificación del proyecto, los próximos pasos y otros puntos clave que Katherine considere importantes. Los próximos pasos pueden incluir ideas como imágenes satelitales o minería, a su criterio. El documento quedará listo para convertir rápidamente en diapositivas con Slidev.</li>
+    </ul>
+  </details>
+
+  <h2>Flujo del sistema</h2>
+  <div class="flow">
+    <div class="block"><h3>1. Estudiante inicia sesión</h3><p>Entra con su cuenta y abre la actividad de clase.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>2. Se carga el modelo 3D</h3><p>El canvas abre un archivo GLB de Polycam o el modelo ambiental elegido por Katherine.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>3. Explora en pantalla grande</h3><p>El estudiante manipula el modelo con Air Mouse o gestos de la mano.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>4. Pregunta desde el teléfono</h3><p>Habla al micrófono del celular o escribe; la pregunta llega al servidor.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>5. El tutor IA decide cómo guiar</h3><p>Consulta la pregunta y el modelo y responde con texto, flechas, zoom o una sugerencia de disección apoyada por Anatomy.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>6. Estudiante interactúa y registra</h3><p>Manipula el objeto, dibuja en el canvas y guarda preguntas y hallazgos en formatos accesibles.</p></div>
+    <div class="arrow" aria-hidden="true">↓</div>
+    <div class="block"><h3>7. Docente revisa la sesión</h3><p>Consulta los datos registrados y decide qué temas reforzar o qué explorar después.</p></div>
+  </div>
+</body>
+</html>

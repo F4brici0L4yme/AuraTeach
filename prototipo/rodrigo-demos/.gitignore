@@ -1,0 +1,6 @@
+.env
+.env.*
+!.env.example
+curio-demo.sqlite
+curio-demo.sqlite-shm
+curio-demo.sqlite-wal

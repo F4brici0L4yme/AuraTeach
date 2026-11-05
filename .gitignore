@@ -1,0 +1,21 @@
+# Local dependencies and generated caches
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.agents/
+.codex/
+.aws/
+
+# Local data and environment files
+*.sqlite
+*.sqlite3
+*.db
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
+Thumbs.db
