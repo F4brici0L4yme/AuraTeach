@@ -141,6 +141,7 @@ async function handler(req, res) {
       const ownModel = Boolean(data.ownModel), image = typeof data.image === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(data.image) && data.image.length <= 2_500_000 ? data.image : '';
       log(user, 'question', question, model?.id || modelName, question);
       const apiKey = process.env.LLM_API_KEY, endpoint = process.env.LLM_API_URL || 'https://api.deepseek.com/chat/completions', llmModel = process.env.LLM_MODEL || 'deepseek-flash';
+      if (data.requireLive && !apiKey) return send(res, 503, { error: 'DeepSeek no está configurado en el servidor. Reinícialo cargando el archivo .env.', code: 'missing_key' });
       const parts = model && !ownModel ? partsFor(model) : [];
       const selected = parts.find(part => part.id === data.selectedPart || part.nodeName === data.selectedPart);
       const annotationText = parts.length ? parts.map(part => `- ${part.id} (${part.label}): ${part.description}`).join('\n') : 'No hay piezas verificadas; limítate a lo que se ve en la imagen.';
@@ -183,7 +184,7 @@ async function handler(req, res) {
       const summary = {
         questions: db.prepare(`SELECT COUNT(*) n FROM events WHERE type='question'${eventFilter}`).get().n,
         opens: db.prepare(`SELECT COUNT(*) n FROM events WHERE type IN ('model_open','own_model_open')${eventFilter}`).get().n,
-        students: db.prepare(`SELECT COUNT(*) n FROM users WHERE role='student'${userFilter}`).get().n,
+        students: db.prepare(`SELECT COUNT(*) n FROM users u WHERE u.role='student'${userFilter}`).get().n,
         parts: db.prepare(`SELECT COUNT(*) n FROM events WHERE type='part_inspect'${eventFilter}`).get().n
       };
       const students = db.prepare(`SELECT u.id,u.alias,
