@@ -1,0 +1,538 @@
+openapi: 3.1.0
+info:
+  title: AuraTeach API
+  version: 1.0.0
+  description: Versioned HTTP contract for the AuraTeach modular monolith.
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: /api/v1
+paths:
+  /health:
+    get:
+      operationId: checkHealth
+      summary: Check API availability
+      security: []
+      tags:
+        - System
+      responses:
+        '200':
+          description: The API is ready to receive requests.
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/HealthResponse'
+        '400':
+          description: The request could not be processed.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /models:
+    get:
+      operationId: listCatalogModels
+      summary: List school models
+      security: []
+      tags:
+        - Model catalog
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 24
+            default: 9
+      responses:
+        '200':
+          description: A slice of school models ordered by visit count and title.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelCatalogPage'
+        '400':
+          description: Invalid pagination or search parameters.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /models/{id}:
+    get:
+      operationId: getCatalogModel
+      summary: Get a school model
+      security: []
+      tags:
+        - Model catalog
+      parameters:
+        - $ref: '#/components/parameters/ModelId'
+      responses:
+        '200':
+          description: School model details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolModel'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /models/{id}/asset:
+    get:
+      operationId: getCatalogModelAsset
+      summary: Stream an allowlisted GLB model asset
+      security: []
+      tags:
+        - Model catalog
+      parameters:
+        - $ref: '#/components/parameters/ModelId'
+      responses:
+        '200':
+          description: GLB model data.
+          content:
+            model/gltf-binary:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /models/{id}/thumbnail:
+    get:
+      operationId: getCatalogModelThumbnail
+      summary: Stream an allowlisted model preview image
+      security: []
+      tags:
+        - Model catalog
+      parameters:
+        - $ref: '#/components/parameters/ModelId'
+      responses:
+        '200':
+          description: PNG preview image.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /tutor/ask:
+    post:
+      operationId: askTutor
+      summary: Ask the educational tutor about the open model
+      security: []
+      tags: [Tutoring]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorQuestion'
+      responses:
+        '200':
+          description: Tutor answer with an optional safe visual locator proposal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TutorAnswer'
+        '400':
+          description: Invalid question or visual context.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '503':
+          description: The tutor provider is unavailable.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /activity/model-visits:
+    post:
+      operationId: recordStudentModelVisit
+      summary: Record a demo student opening a model
+      security: []
+      tags: [Student activity]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [modelId]
+              properties:
+                modelId: { type: string, maxLength: 120 }
+      responses:
+        '204':
+          description: Model visit recorded for the demo student.
+        '400':
+          description: Invalid model identifier.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+  /teacher/analytics/summary:
+    get:
+      operationId: getTeacherAnalyticsSummary
+      summary: Get classroom participation analytics
+      security: []
+      tags: [Teacher analytics]
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+      responses:
+        '200':
+          description: Aggregated classroom participation and model usage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherAnalyticsSummary'
+        '400':
+          description: Invalid date filters.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+  /teacher/analytics/questions:
+    get:
+      operationId: listTeacherQuestions
+      summary: List submitted student questions
+      security: []
+      tags: [Teacher analytics]
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - name: offset
+          in: query
+          required: false
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+      responses:
+        '200':
+          description: Paginated question text for teacher review.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeacherQuestionsPage'
+        '400':
+          description: Invalid date range or pagination.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+  /teacher/analytics/export.csv:
+    get:
+      operationId: exportTeacherAnalyticsCsv
+      summary: Export filtered classroom analytics as CSV
+      security: []
+      tags: [Teacher analytics]
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+      responses:
+        '200':
+          description: UTF-8 CSV report for the selected date range.
+          content:
+            text/csv:
+              schema: { type: string }
+        '400':
+          description: Invalid date filters.
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+components:
+  parameters:
+    FromDate:
+      name: from
+      in: query
+      required: false
+      schema: { type: string, format: date }
+    ToDate:
+      name: to
+      in: query
+      required: false
+      schema: { type: string, format: date }
+    ModelId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-z0-9]+(?:[-_][a-z0-9]+)*$'
+  responses:
+    NotFound:
+      description: The requested school model or asset does not exist.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+            - unavailable
+    ProblemDetails:
+      type: object
+      additionalProperties: true
+      required:
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          default: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference
+    ModelCatalogPage:
+      type: object
+      additionalProperties: false
+      required: [items, offset, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SchoolModel'
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 24
+        total:
+          type: integer
+          minimum: 0
+    SchoolModel:
+      type: object
+      additionalProperties: false
+      required: [id, title, topic, visitCount, source, license, assetUrl, thumbnailUrl, capabilities]
+      properties:
+        id:
+          type: string
+          pattern: '^[a-z0-9]+(?:[-_][a-z0-9]+)*$'
+        title:
+          type: string
+        topic:
+          type: string
+        visitCount:
+          type: integer
+          minimum: 0
+        source:
+          type: string
+        license:
+          type: string
+        assetUrl:
+          type: string
+          format: uri-reference
+        thumbnailUrl:
+          type: string
+          format: uri-reference
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [semantic-parts, disassembly]
+    TutorQuestion:
+      type: object
+      additionalProperties: false
+      required: [question, modelId, topic]
+      properties:
+        question:
+          type: string
+          minLength: 1
+          maxLength: 1200
+        modelId:
+          type: string
+          maxLength: 120
+        topic:
+          type: string
+          maxLength: 200
+        selectedNodePath:
+          type: string
+          maxLength: 500
+        sceneNodes:
+          type: array
+          maxItems: 120
+          items:
+            type: object
+            additionalProperties: false
+            required: [nodePath, name, type]
+            properties:
+              nodePath: { type: string, maxLength: 500 }
+              name: { type: string, maxLength: 120 }
+              type: { type: string, enum: [mesh, group, other] }
+        sceneParts:
+          type: array
+          maxItems: 32
+          items:
+            type: object
+            additionalProperties: false
+            required: [partId, label]
+            properties:
+              partId: { type: string, pattern: '^[a-z0-9-]{1,80}$' }
+              label: { type: string, maxLength: 120 }
+        screenshotDataUrl:
+          type: string
+          maxLength: 4500000
+          description: Optional compressed render of the visible model; never the source GLB.
+    TutorAnswer:
+      type: object
+      additionalProperties: false
+      required: [answer, speechText, locator, sceneAction]
+      properties:
+        answer: { type: string, maxLength: 5000 }
+        speechText: { type: string, maxLength: 3000 }
+        locator:
+          oneOf:
+            - $ref: '#/components/schemas/NoLocator'
+            - $ref: '#/components/schemas/SemanticNodeLocator'
+            - $ref: '#/components/schemas/ImagePointLocator'
+        sceneAction:
+          oneOf:
+            - $ref: '#/components/schemas/NoSceneAction'
+            - $ref: '#/components/schemas/ExplodePartAction'
+            - $ref: '#/components/schemas/AssembleAction'
+    NoSceneAction:
+      type: object
+      additionalProperties: false
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [none] }
+    ExplodePartAction:
+      type: object
+      additionalProperties: false
+      required: [kind, partId]
+      properties:
+        kind: { type: string, enum: [explode-part] }
+        partId: { type: string, pattern: '^[a-z0-9-]{1,80}$' }
+    AssembleAction:
+      type: object
+      additionalProperties: false
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [assemble] }
+    NoLocator:
+      type: object
+      additionalProperties: false
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [none] }
+        reason: { type: string, maxLength: 240 }
+    SemanticNodeLocator:
+      type: object
+      additionalProperties: false
+      required: [kind, nodePath, label, confidence]
+      properties:
+        kind: { type: string, enum: [semantic-node] }
+        nodePath: { type: string, maxLength: 500 }
+        label: { type: string, maxLength: 120 }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+    ImagePointLocator:
+      type: object
+      additionalProperties: false
+      required: [kind, viewId, uv, label, confidence]
+      properties:
+        kind: { type: string, enum: [image-point] }
+        viewId: { type: string, maxLength: 80 }
+        uv:
+          type: array
+          prefixItems:
+            - { type: number, minimum: 0, maximum: 1 }
+            - { type: number, minimum: 0, maximum: 1 }
+          minItems: 2
+          maxItems: 2
+        label: { type: string, maxLength: 120 }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+    TeacherAnalyticsSummary:
+      type: object
+      required: [from, to, students, totals, dailyActivity, modelUsage]
+      properties:
+        from: { type: [string, 'null'], format: date }
+        to: { type: [string, 'null'], format: date }
+        students:
+          type: array
+          items:
+            type: object
+            required: [studentId, displayName, visitCount, questionCount]
+            properties:
+              studentId: { type: integer }
+              displayName: { type: string }
+              visitCount: { type: integer }
+              questionCount: { type: integer }
+              lastActivityAt: { type: [string, 'null'], format: date-time }
+        totals:
+          type: object
+          required: [students, visits, questions, activeStudents]
+          properties:
+            students: { type: integer }
+            visits: { type: integer }
+            questions: { type: integer }
+            activeStudents: { type: integer }
+        dailyActivity:
+          type: array
+          items:
+            type: object
+            required: [date, visits, questions]
+            properties:
+              date: { type: string, format: date }
+              visits: { type: integer }
+              questions: { type: integer }
+        modelUsage:
+          type: array
+          items:
+            type: object
+            required: [modelId, title, visitCount, questionCount]
+            properties:
+              modelId: { type: integer }
+              title: { type: string }
+              visitCount: { type: integer }
+              questionCount: { type: integer }
+    TeacherQuestionsPage:
+      type: object
+      required: [items, offset, limit, total]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [questionId, studentId, displayName, modelId, modelTitle, questionText, askedAt]
+            properties:
+              questionId: { type: integer }
+              studentId: { type: integer }
+              displayName: { type: string }
+              modelId: { type: integer }
+              modelTitle: { type: string }
+              questionText: { type: string }
+              askedAt: { type: string, format: date-time }
+        offset: { type: integer, minimum: 0 }
+        limit: { type: integer, minimum: 1, maximum: 100 }
+        total: { type: integer, minimum: 0 }

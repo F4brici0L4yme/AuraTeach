@@ -1,0 +1,184 @@
+{
+  "models": [
+    {
+      "id": "escuela-scan",
+      "catalogKey": "escuela-scan",
+      "title": "Modelo escolar",
+      "topic": "Exploración 3D",
+      "asset": "models/escuela-scan.glb",
+      "thumbnail": "thumbnails/escuela-scan.png",
+      "source": "9_13_2025-mejorado.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "maceta",
+      "catalogKey": "maceta",
+      "title": "Maceta",
+      "topic": "Biología y ambiente",
+      "asset": "models/maceta.glb",
+      "thumbnail": "thumbnails/maceta.png",
+      "source": "flower-pot.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "colonia-hongos",
+      "catalogKey": "colonia-hongos",
+      "title": "Colonia de hongos",
+      "topic": "Biología y ambiente",
+      "asset": "models/colonia-hongos.glb",
+      "thumbnail": "thumbnails/colonia-hongos.png",
+      "source": "mushroom_colony_LOD0.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lapicero",
+      "catalogKey": "lapicero",
+      "title": "Lapicero",
+      "topic": "Ingeniería y materiales",
+      "asset": "models/lapicero.glb",
+      "thumbnail": "thumbnails/lapicero.png",
+      "source": "demo-lapicero/lapicero.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-anatomia-cerebro",
+      "catalogKey": "lab-anatomia-cerebro",
+      "title": "Cerebro",
+      "topic": "Biología y ambiente",
+      "asset": "models/lab-anatomia-cerebro.glb",
+      "thumbnail": "thumbnails/lab-anatomia-cerebro.png",
+      "source": "3d_lab_aurateach/assets/anatomia/cerebro.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-anatomia-corazon",
+      "catalogKey": "lab-anatomia-corazon",
+      "title": "Corazon",
+      "topic": "Biología y ambiente",
+      "asset": "models/lab-anatomia-corazon.glb",
+      "thumbnail": "thumbnails/lab-anatomia-corazon.png",
+      "source": "3d_lab_aurateach/assets/anatomia/corazon.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-electronica-arduino_uno",
+      "catalogKey": "lab-electronica-arduino_uno",
+      "title": "Arduino Uno",
+      "topic": "Electrónica",
+      "asset": "models/lab-electronica-arduino_uno.glb",
+      "thumbnail": "thumbnails/lab-electronica-arduino_uno.png",
+      "source": "3d_lab_aurateach/assets/electronica/arduino_uno.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-electronica-casco_sensores",
+      "catalogKey": "lab-electronica-casco_sensores",
+      "title": "Casco Sensores",
+      "topic": "Electrónica",
+      "asset": "models/lab-electronica-casco_sensores.glb",
+      "thumbnail": "thumbnails/lab-electronica-casco_sensores.png",
+      "source": "3d_lab_aurateach/assets/electronica/casco_sensores.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-electronica-esp32_s3_cam",
+      "catalogKey": "lab-electronica-esp32_s3_cam",
+      "title": "Esp32 S3 Cam",
+      "topic": "Electrónica",
+      "asset": "models/lab-electronica-esp32_s3_cam.glb",
+      "thumbnail": "thumbnails/lab-electronica-esp32_s3_cam.png",
+      "source": "3d_lab_aurateach/assets/electronica/esp32_s3_cam.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-electronica-modulo_tech",
+      "catalogKey": "lab-electronica-modulo_tech",
+      "title": "Modulo Tech",
+      "topic": "Electrónica",
+      "asset": "models/lab-electronica-modulo_tech.glb",
+      "thumbnail": "thumbnails/lab-electronica-modulo_tech.png",
+      "source": "3d_lab_aurateach/assets/electronica/modulo_tech.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-carro_buggy",
+      "catalogKey": "lab-mecanica-carro_buggy",
+      "title": "Carro Buggy",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-carro_buggy.glb",
+      "thumbnail": "thumbnails/lab-mecanica-carro_buggy.png",
+      "source": "3d_lab_aurateach/assets/mecanica/carro_buggy.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-motores-motor_brushless",
+      "catalogKey": "lab-mecanica-motores-motor_brushless",
+      "title": "Motor Brushless",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-motores-motor_brushless.glb",
+      "thumbnail": "thumbnails/lab-mecanica-motores-motor_brushless.png",
+      "source": "3d_lab_aurateach/assets/mecanica/motores/motor_brushless.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-motores-motor_dc",
+      "catalogKey": "lab-mecanica-motores-motor_dc",
+      "title": "Motor Dc",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-motores-motor_dc.glb",
+      "thumbnail": "thumbnails/lab-mecanica-motores-motor_dc.png",
+      "source": "3d_lab_aurateach/assets/mecanica/motores/motor_dc.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-motores-motor_mecanismo",
+      "catalogKey": "lab-mecanica-motores-motor_mecanismo",
+      "title": "Motor Mecanismo",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-motores-motor_mecanismo.glb",
+      "thumbnail": "thumbnails/lab-mecanica-motores-motor_mecanismo.png",
+      "source": "3d_lab_aurateach/assets/mecanica/motores/motor_mecanismo.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-motores-motor_stepper_nema17",
+      "catalogKey": "lab-mecanica-motores-motor_stepper_nema17",
+      "title": "Motor Stepper Nema17",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-motores-motor_stepper_nema17.glb",
+      "thumbnail": "thumbnails/lab-mecanica-motores-motor_stepper_nema17.png",
+      "source": "3d_lab_aurateach/assets/mecanica/motores/motor_stepper_nema17.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-motores-reductora_motor",
+      "catalogKey": "lab-mecanica-motores-reductora_motor",
+      "title": "Reductora Motor",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-motores-reductora_motor.glb",
+      "thumbnail": "thumbnails/lab-mecanica-motores-reductora_motor.png",
+      "source": "3d_lab_aurateach/assets/mecanica/motores/reductora_motor.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "lab-mecanica-reductora_engranajes",
+      "catalogKey": "lab-mecanica-reductora_engranajes",
+      "title": "Reductora Engranajes",
+      "topic": "Mecánica e ingeniería",
+      "asset": "models/lab-mecanica-reductora_engranajes.glb",
+      "thumbnail": "thumbnails/lab-mecanica-reductora_engranajes.png",
+      "source": "3d_lab_aurateach/assets/mecanica/reductora_engranajes.glb",
+      "license": "unknown"
+    },
+    {
+      "id": "guitarra-acustica",
+      "catalogKey": "guitarra-acustica",
+      "title": "Guitarra acústica",
+      "topic": "Física, música e ingeniería",
+      "asset": "models/guitarra-acustica.glb",
+      "thumbnail": "thumbnails/guitarra-acustica.png",
+      "source": "assets/blender/guitarra_acustica/guitarra_acustica.glb",
+      "license": "unknown"
+    }
+  ]
+}

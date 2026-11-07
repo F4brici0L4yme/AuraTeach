@@ -1,0 +1,37 @@
+{
+  "name": "aurateach-v2",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@12.2.0",
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "start:server": "npm run start:dev --workspace @aurateach/server",
+    "start:web": "npm run start --workspace @aurateach/web",
+    "contracts:lint": "redocly lint contracts/openapi.yaml",
+    "contracts:types": "npm run api:types --workspace @aurateach/web",
+    "architecture": "npm run architecture --workspace @aurateach/server",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose stop db",
+    "db:migrate": "npm run db:migrate --workspace @aurateach/server",
+    "db:seed": "npm run db:seed --workspace @aurateach/server",
+    "db:verify": "npm run db:verify --workspace @aurateach/server",
+    "db:seed:dashboard-smoke": "npm run db:seed:dashboard-smoke --workspace @aurateach/server",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "verify": "npm run contracts:lint && npm run contracts:types && npm run architecture && npm run lint && npm test && npm run test:e2e --workspace @aurateach/server && npm run build"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.76.0",
+    "openapi-typescript": "^7.13.0"
+  },
+  "overrides": {
+    "minimatch": "^11.0.5"
+  }
+}
