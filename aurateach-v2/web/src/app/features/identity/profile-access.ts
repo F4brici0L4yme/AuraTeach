@@ -60,7 +60,7 @@ const routeForRole: Record<DemoRole, string> = {
         [disabled]="!selectedRole()"
         (click)="enter()"
       >
-        Entrar <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+        <span class="enter-label">Entrar</span><mat-icon aria-hidden="true">arrow_forward</mat-icon>
       </button>
       </section>
     </main>
@@ -85,9 +85,11 @@ const routeForRole: Record<DemoRole, string> = {
     .role-name { margin-top: 4px; color: #263247; font-size: 21px; font-weight: 700; }
     .role-description { color: #718096; font-size: 13px; line-height: 1.45; }
     .demo-note { margin: 27px 0 15px; color: #8692a4; font-size: 13px; }
-    .enter-button { min-width: 220px; min-height: 48px; color: #fff; background: #315eb7; border-radius: 12px; font-weight: 650; }
+    .enter-button { min-width: 220px; min-height: 48px; background: #315eb7; border-radius: 12px; font-weight: 650; }
+    .enter-button .enter-label, .enter-button mat-icon { color: #fff; }
     .enter-button mat-icon { margin-left: 8px; vertical-align: middle; }
-    .enter-button:disabled { color: #8d99aa; background: #e8edf4; }
+    .enter-button:disabled { background: #e8edf4; }
+    .enter-button:disabled .enter-label, .enter-button:disabled mat-icon { color: #596579; }
     @media (max-width: 560px) { .access-shell { padding: 14px; } .welcome-card { padding: 30px 18px; border-radius: 22px; } .intro { margin-bottom: 24px; font-size: 14px; } .role-grid { gap: 11px; } .role-card { min-height: 185px; padding: 14px 8px; } .role-illustration { width: 76px; height: 76px; border-radius: 20px; } .role-illustration mat-icon { font-size: 42px; width: 42px; height: 42px; } .role-name { font-size: 17px; } .role-description { font-size: 11px; } .enter-button { width: 100%; } }
     @media (prefers-reduced-motion: reduce) { .role-card { transition: none; } }
   `,

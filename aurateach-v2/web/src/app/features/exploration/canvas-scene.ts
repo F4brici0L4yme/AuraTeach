@@ -12,10 +12,14 @@ export interface CanvasSceneSummary {
 
 export interface CanvasImagePointLocator {
   readonly kind: 'image-point';
-  readonly viewId: string;
+  readonly viewId: TutorViewId | 'current';
   /** Normalized image coordinates, in the same mirrored orientation as the canvas view. */
   readonly uv: readonly [number, number];
 }
+
+export type TutorViewId = 'front' | 'back' | 'left' | 'right' | 'top';
+export interface TutorSceneImage { readonly viewId: TutorViewId; readonly dataUrl: string; }
+export const TUTOR_VIEW_PRESETS: readonly TutorViewId[] = ['front', 'back', 'left', 'right', 'top'];
 
 export interface CanvasSemanticNodeLocator {
   readonly kind: 'semantic-node';
@@ -55,7 +59,7 @@ export function validateCanvasLocator(locator: unknown, scene: CanvasSceneSummar
       : 'El tutor indicó una pieza que no está en el modelo actual.';
   }
   if (value['kind'] !== 'image-point') return 'El tipo de ubicación no está permitido.';
-  if (value['viewId'] !== 'current') return 'La ubicación corresponde a otra vista del modelo.';
+  if (value['viewId'] !== 'current' && !TUTOR_VIEW_PRESETS.includes(value['viewId'] as TutorViewId)) return 'La ubicación corresponde a otra vista del modelo.';
   const uv = value['uv'];
   if (!Array.isArray(uv) || uv.length !== 2 || !uv.every((coordinate) => typeof coordinate === 'number'
     && Number.isFinite(coordinate) && coordinate >= 0 && coordinate <= 1)) {

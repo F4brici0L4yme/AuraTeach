@@ -1,0 +1,1 @@
+var e=`/assets/lab-anatomia-cerebro-KQjAOjE3.png`;export{e as t};

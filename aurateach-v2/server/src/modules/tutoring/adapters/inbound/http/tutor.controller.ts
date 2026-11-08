@@ -8,13 +8,17 @@ import {
   Post,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import type { AskTutorCommand, AskTutorPort, TutorSceneNode, TutorScenePart } from '../../../application/ports/inbound/ask-tutor.port.js';
+import type { AskTutorCommand, AskTutorPort, TutorSceneImage, TutorSceneNode, TutorScenePart, TutorViewId } from '../../../application/ports/inbound/ask-tutor.port.js';
 import { TutorProviderUnavailableError } from '../../../application/ports/outbound/tutor-provider.port.js';
 import { MAX_NODES } from '../../../application/use-cases/ask-tutor.use-case.js';
 import { ASK_TUTOR } from '../../nest/tutoring.tokens.js';
 
 const MAX_SCREENSHOT_BYTES = 3 * 1024 * 1024;
+const MAX_SCENE_IMAGE_BYTES = 500 * 1024;
+const MAX_SCENE_IMAGES = 5;
+const MAX_TOTAL_SCENE_IMAGE_BYTES = 2_400 * 1024;
 const DATA_URL_PATTERN = /^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/;
+const TUTOR_VIEW_IDS = new Set<TutorViewId>(['front', 'back', 'left', 'right', 'top']);
 
 @Controller('tutor')
 export class TutorController {
@@ -43,6 +47,7 @@ function parseCommand(value: unknown): AskTutorCommand {
   const selectedNodePath = optionalString(value['selectedNodePath'], 'selectedNodePath', 500);
   const screenshotDataUrl = optionalString(value['screenshotDataUrl'], 'screenshotDataUrl', MAX_SCREENSHOT_BYTES * 2);
   if (screenshotDataUrl) validateScreenshot(screenshotDataUrl);
+  const sceneImages = parseSceneImages(value['sceneImages']);
   const sceneNodes = parseSceneNodes(value['sceneNodes']);
   const sceneParts = parseSceneParts(value['sceneParts']);
   if (selectedNodePath && sceneNodes && !sceneNodes.some((node) => node.nodePath === selectedNodePath)) {
@@ -55,8 +60,30 @@ function parseCommand(value: unknown): AskTutorCommand {
     ...(selectedNodePath ? { selectedNodePath } : {}),
     ...(sceneNodes ? { sceneNodes } : {}),
     ...(sceneParts ? { sceneParts } : {}),
+    ...(sceneImages ? { sceneImages } : {}),
     ...(screenshotDataUrl ? { screenshotDataUrl } : {}),
   };
+}
+
+function parseSceneImages(value: unknown): TutorSceneImage[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value) || value.length < 1 || value.length > MAX_SCENE_IMAGES) {
+    throw new BadRequestException(`sceneImages must contain between 1 and ${MAX_SCENE_IMAGES} views.`);
+  }
+  const seen = new Set<string>();
+  let totalBytes = 0;
+  const images = value.map((entry, index) => {
+    if (!isRecord(entry) || typeof entry['viewId'] !== 'string' || !TUTOR_VIEW_IDS.has(entry['viewId'] as TutorViewId) || seen.has(entry['viewId'])) {
+      throw new BadRequestException(`sceneImages[${index}].viewId must be a unique supported viewpoint.`);
+    }
+    const dataUrl = requiredString(entry['dataUrl'], `sceneImages[${index}].dataUrl`, 1, MAX_SCENE_IMAGE_BYTES * 2);
+    const imageBytes = validateScreenshot(dataUrl, MAX_SCENE_IMAGE_BYTES);
+    totalBytes += imageBytes;
+    if (totalBytes > MAX_TOTAL_SCENE_IMAGE_BYTES) throw new BadRequestException('Combined model previews must be 2.4 MiB or smaller.');
+    seen.add(entry['viewId']);
+    return { viewId: entry['viewId'] as TutorViewId, dataUrl };
+  });
+  return images;
 }
 
 function parseSceneParts(value: unknown): TutorScenePart[] | undefined {
@@ -87,13 +114,15 @@ function parseSceneNodes(value: unknown): TutorSceneNode[] | undefined {
   });
 }
 
-function validateScreenshot(value: string): void {
+function validateScreenshot(value: string, maxBytes = MAX_SCREENSHOT_BYTES): number {
   const match = DATA_URL_PATTERN.exec(value);
   if (!match) throw new BadRequestException('screenshotDataUrl must be a PNG, JPEG, or WebP base64 data URL.');
   const base64 = match[2] ?? '';
-  if (Buffer.byteLength(base64, 'base64') > MAX_SCREENSHOT_BYTES) {
-    throw new BadRequestException('Screenshot must be 3 MiB or smaller.');
+  const bytes = Buffer.byteLength(base64, 'base64');
+  if (bytes > maxBytes) {
+    throw new BadRequestException(`Screenshot must be ${Math.round(maxBytes / 1024)} KiB or smaller.`);
   }
+  return bytes;
 }
 
 function requiredString(value: unknown, name: string, min: number, max: number): string {

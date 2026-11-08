@@ -53,14 +53,16 @@ export class AskTutorUseCase implements AskTutorPort {
     }
     if (candidate['kind'] === 'image-point') {
       const uv = candidate['uv'];
-      // Only the current rendered view is accepted: the request carries one screenshot,
-      // not a set of camera-identified views.
-      if (candidate['viewId'] !== 'current' || !command.screenshotDataUrl ||
+      const suppliedView = typeof candidate['viewId'] === 'string' && (
+        (candidate['viewId'] === 'current' && Boolean(command.screenshotDataUrl)) ||
+        (command.sceneImages?.some((image) => image.viewId === candidate['viewId']) ?? false)
+      );
+      if (!suppliedView ||
         !Array.isArray(uv) || uv.length !== 2 ||
         !uv.every((value) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1)) {
         return { kind: 'none' };
       }
-      return { kind: 'image-point', viewId: 'current', uv: [uv[0] as number, uv[1] as number], label: label.trim(), confidence };
+      return { kind: 'image-point', viewId: candidate['viewId'] as 'front' | 'back' | 'left' | 'right' | 'top' | 'current', uv: [uv[0] as number, uv[1] as number], label: label.trim(), confidence };
     }
     return { kind: 'none' };
   }

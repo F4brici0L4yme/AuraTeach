@@ -230,8 +230,14 @@ export interface components {
                 partId: string;
                 label: string;
             }[];
-            /** @description Optional compressed render of the visible model; never the source GLB. */
+            /** @description Deprecated single-view render retained for compatible clients; never the source GLB. */
             screenshotDataUrl?: string;
+            /** @description Compressed browser renders from fixed model viewpoints; the source GLB is never uploaded. */
+            sceneImages?: {
+                /** @enum {string} */
+                viewId: "front" | "back" | "left" | "right" | "top";
+                dataUrl: string;
+            }[];
         };
         TutorAnswer: {
             answer: string;
@@ -267,7 +273,8 @@ export interface components {
         ImagePointLocator: {
             /** @enum {string} */
             kind: "image-point";
-            viewId: string;
+            /** @enum {string} */
+            viewId: "current" | "front" | "back" | "left" | "right" | "top";
             uv: [
                 number,
                 number

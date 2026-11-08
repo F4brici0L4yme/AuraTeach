@@ -42,7 +42,10 @@ describe('TutorPanel', () => {
     fixture = TestBed.createComponent(TutorPanel);
     fixture.componentRef.setInput('modelId', 'school-pot');
     fixture.componentRef.setInput('topic', 'Biología y ambiente');
-    fixture.componentRef.setInput('screenshot', () => 'data:image/png;base64,capture');
+    fixture.componentRef.setInput('sceneImages', () => [
+      { viewId: 'front', dataUrl: 'data:image/jpeg;base64,front' },
+      { viewId: 'back', dataUrl: 'data:image/jpeg;base64,back' },
+    ]);
     fixture.detectChanges();
 
     originalSpeechRecognition = Object.getOwnPropertyDescriptor(window, 'SpeechRecognition');
@@ -165,23 +168,15 @@ describe('TutorPanel', () => {
     expect(CapturingRecognition.active?.start).toHaveBeenCalledOnce();
   });
 
-  it('attaches a canvas screenshot only after explicit consent', async () => {
+  it('attaches locally rendered model views with every tutor question', async () => {
     openChat();
     await enterQuestion('¿Qué observo?');
     await submitQuestion();
-    expect(apiAsk.mock.calls[0]?.[0]).not.toHaveProperty('screenshotDataUrl');
-    answerSubject.next(tutorAnswer);
-    fixture.detectChanges();
-
-    answerSubject = new Subject<TutorAnswer>();
-    apiAsk.mockImplementation((question: TutorQuestion) => { void question; return answerSubject.asObservable(); });
-    (fixture.nativeElement.querySelector('.privacy input') as HTMLInputElement).click();
-    fixture.detectChanges();
-    await enterQuestion('¿Puedes señalarlo?');
-    await submitQuestion();
-
-    expect(apiAsk).toHaveBeenCalledTimes(2);
-    expect(apiAsk.mock.calls[1]?.[0]).toHaveProperty('screenshotDataUrl', 'data:image/png;base64,capture');
+    expect(apiAsk.mock.calls[0]?.[0]).toHaveProperty('sceneImages', [
+      { viewId: 'front', dataUrl: 'data:image/jpeg;base64,front' },
+      { viewId: 'back', dataUrl: 'data:image/jpeg;base64,back' },
+    ]);
+    expect(fixture.nativeElement.textContent).toContain('El archivo GLB original permanece en este equipo.');
   });
 
   function openChat(): void {

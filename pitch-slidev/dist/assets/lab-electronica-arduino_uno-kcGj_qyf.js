@@ -1,0 +1,1 @@
+var e=`/assets/lab-electronica-arduino_uno-B750--I7.png`;export{e as t};

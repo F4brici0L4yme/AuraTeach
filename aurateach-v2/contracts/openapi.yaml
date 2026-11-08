@@ -403,7 +403,18 @@ components:
         screenshotDataUrl:
           type: string
           maxLength: 4500000
-          description: Optional compressed render of the visible model; never the source GLB.
+          description: Deprecated single-view render retained for compatible clients; never the source GLB.
+        sceneImages:
+          type: array
+          maxItems: 5
+          description: Compressed browser renders from fixed model viewpoints; the source GLB is never uploaded.
+          items:
+            type: object
+            additionalProperties: false
+            required: [viewId, dataUrl]
+            properties:
+              viewId: { type: string, enum: [front, back, left, right, top] }
+              dataUrl: { type: string, maxLength: 700000 }
     TutorAnswer:
       type: object
       additionalProperties: false
@@ -462,7 +473,7 @@ components:
       required: [kind, viewId, uv, label, confidence]
       properties:
         kind: { type: string, enum: [image-point] }
-        viewId: { type: string, maxLength: 80 }
+        viewId: { type: string, enum: [current, front, back, left, right, top] }
         uv:
           type: array
           prefixItems:

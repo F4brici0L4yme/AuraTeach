@@ -31,11 +31,17 @@ export class DeepSeekTutorProvider implements TutorProviderPort {
           selectedNodePath: command.selectedNodePath ?? null,
           sceneNodes: command.sceneNodes ?? [],
           sceneParts: command.sceneParts ?? [],
+          imageEvidence: command.sceneImages?.map(({ viewId }) => ({ viewId })) ?? [],
         }),
       },
     ];
+    for (const image of command.sceneImages ?? []) {
+      userContent.push({ type: 'text', text: `Vista ${image.viewId} del mismo modelo. Las coordenadas de señalización deben ser relativas solo a esta imagen; viewId: ${image.viewId}.` });
+      userContent.push({ type: 'image_url', image_url: { url: image.dataUrl, detail: 'high' } });
+    }
     if (command.screenshotDataUrl) {
-      userContent.push({ type: 'image_url', image_url: { url: command.screenshotDataUrl } });
+      userContent.push({ type: 'text', text: 'Vista actual del modelo (viewId: current).' });
+      userContent.push({ type: 'image_url', image_url: { url: command.screenshotDataUrl, detail: 'high' } });
     }
 
     let response: Response;

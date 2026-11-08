@@ -21,6 +21,9 @@ import {
   type CanvasSceneSummary,
   type CanvasSelection,
   type GuitarAssemblyState,
+  type TutorSceneImage,
+  type TutorViewId,
+  TUTOR_VIEW_PRESETS,
 } from './canvas-scene';
 import { HandGestureTracker, type HandLandmark } from './hand-gesture';
 
@@ -227,6 +230,51 @@ export class GlbViewport implements OnDestroy, CanvasCommandPort {
     }
   }
 
+  /** Renders five fixed viewpoints locally; only these compressed JPEGs may leave the browser. */
+  captureSceneViews(): TutorSceneImage[] {
+    if (!this.renderer || !this.camera || !this.controls || this.lifecycle !== 'ready') return [];
+    const originalPosition = this.camera.position.clone();
+    const originalUp = this.camera.up.clone();
+    const originalTarget = this.controls.target.clone();
+    const originalTransition = this.cameraTransition;
+    const originalHover = this.hoveredMesh;
+    const helperVisible = this.transformHelper?.visible ?? false;
+    const annotationVisibility = [...this.annotations.values()].map((annotation) => [annotation, annotation.visible] as const);
+    const images: TutorSceneImage[] = [];
+    this.cameraTransition = null;
+    this.setHover(undefined);
+    if (this.transformHelper) this.transformHelper.visible = false;
+    for (const [annotation] of annotationVisibility) annotation.visible = false;
+    try {
+      for (const viewId of TUTOR_VIEW_PRESETS) {
+        this.setPreset(viewId);
+        this.renderer.render(this.scene, this.camera);
+        const source = this.renderer.domElement;
+        const scale = Math.min(1, 600 / Math.max(source.width, source.height));
+        const image = document.createElement('canvas');
+        image.width = Math.max(1, Math.round(source.width * scale));
+        image.height = Math.max(1, Math.round(source.height * scale));
+        const context = image.getContext('2d');
+        if (!context) return [];
+        context.drawImage(source, 0, 0, image.width, image.height);
+        images.push({ viewId, dataUrl: image.toDataURL('image/jpeg', 0.55) });
+      }
+      return images;
+    } catch {
+      return [];
+    } finally {
+      this.camera.position.copy(originalPosition);
+      this.camera.up.copy(originalUp);
+      this.controls.target.copy(originalTarget);
+      this.controls.update();
+      this.cameraTransition = originalTransition;
+      if (this.transformHelper) this.transformHelper.visible = helperVisible;
+      for (const [annotation, visible] of annotationVisibility) annotation.visible = visible;
+      if (originalHover) this.setHover(originalHover);
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+
   /** Validates a tutor locator and resolves it against this scene before creating an anchored arrow. */
   applyLocator(locator: CanvasLocator, label: string): CanvasCommandResult {
     if (this.lifecycle !== 'ready' || !this.model || !this.camera) return this.notReadyResult();
@@ -236,6 +284,7 @@ export class GlbViewport implements OnDestroy, CanvasCommandPort {
     const summary = this.getSceneSummary();
     const invalid = validateCanvasLocator(locator, summary);
     if (invalid) return { status: 'invalid-command', reason: invalid };
+    if (locator.kind === 'image-point' && locator.viewId !== 'current') this.setPreset(locator.viewId as TutorViewId);
     const target = locator.kind === 'semantic-node'
       ? this.sceneNodePathsTarget(locator.nodePath)
       : this.raycastAt(locator.uv[0], locator.uv[1]);

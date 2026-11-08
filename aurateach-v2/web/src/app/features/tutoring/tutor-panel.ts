@@ -6,6 +6,7 @@ import { TutorApi, type TutorAnswer } from './tutor-api';
 
 type SceneNode = NonNullable<components['schemas']['TutorQuestion']['sceneNodes']>[number];
 type ScenePart = NonNullable<components['schemas']['TutorQuestion']['sceneParts']>[number];
+type SceneImage = NonNullable<components['schemas']['TutorQuestion']['sceneImages']>[number];
 interface RecognitionResult { isFinal: boolean; 0: { transcript: string } }
 interface RecognitionEvent { resultIndex: number; results: ArrayLike<RecognitionResult> }
 interface LocalSpeechRecognition extends EventTarget {
@@ -54,8 +55,7 @@ interface SpeechWindow extends Window {
           @if (interimText()) { <article class="student interim"><small>Te escucho…</small><p>{{ interimText() }}</p></article> }
           @if (pending()) { <p class="working" role="status">El tutor está pensando…</p> }
         </div>
-        <label class="privacy"><input type="checkbox" [checked]="shareScreenshot()" (change)="shareScreenshot.set($any($event.target).checked)" />
-          Compartir una captura visible del modelo con DeepSeek para ayudar a ubicar partes. El archivo GLB nunca se envía.</label>
+        <p class="privacy-note">Al enviar tu pregunta, se compartirán con DeepSeek hasta 5 vistas renderizadas del modelo para analizar su forma. El archivo GLB original permanece en este equipo.</p>
         <form (submit)="submitTyped($event)">
           <input aria-label="Pregunta al tutor" placeholder="Pregunta sobre lo que observas…" [(ngModel)]="draft" name="question" maxlength="1200" />
           <button matButton="filled" type="submit" [disabled]="pending() || !draft.trim()">Enviar</button>
@@ -79,7 +79,7 @@ interface SpeechWindow extends Window {
     article small { color:#66748a; font-size:11px; } article p { white-space:pre-wrap; margin:5px 0 0; line-height:1.45; }
     .interim { opacity:.72; } .working { color:#68758a; font-size:13px; }
     form { display:flex; gap:8px; padding:12px; border-top:1px solid #e7ebf2; }
-    .privacy { display:flex; align-items:flex-start; gap:7px; padding:8px 13px 0; color:#737f92; font-size:11px; line-height:1.35; } .privacy input { margin:1px 0 0; accent-color:#536bd0; }
+    .privacy-note { margin:0; padding:8px 13px 0; color:#66748a; font-size:11px; line-height:1.4; }
     input { flex:1; min-width:0; padding:11px 12px; border:1px solid #cdd6e4; border-radius:11px; font:inherit; }
     .audio-actions { display:flex; gap:4px; margin-top:6px; } .error { padding:0 14px 10px; color:#a32626; font-size:13px; }
     @media (max-width:600px) { :host { right:12px; bottom:14px; } .tutor-panel { right:-2px; width:calc(100vw - 24px); height:min(65dvh,560px); } }
@@ -91,7 +91,7 @@ export class TutorPanel implements OnDestroy {
   readonly sceneNodes = input<SceneNode[]>([]);
   readonly sceneParts = input<ScenePart[]>([]);
   readonly selectedNodePath = input<string | null>(null);
-  readonly screenshot = input<(() => string | null) | null>(null);
+  readonly sceneImages = input<(() => SceneImage[]) | null>(null);
   readonly locator = output<NonNullable<TutorAnswer['locator']>>();
   readonly sceneAction = output<NonNullable<TutorAnswer['sceneAction']>>();
 
@@ -106,7 +106,6 @@ export class TutorPanel implements OnDestroy {
   readonly messages = signal<{ id: number; role: 'student' | 'tutor'; text: string; audio?: boolean }[]>([
     { id: 1, role: 'tutor', text: '¡Hola! Todo lo que nos rodea es un laboratorio. ¿Qué detalle del modelo quieres investigar?' },
   ]);
-  readonly shareScreenshot = signal(false);
   protected draft = '';
   private nextMessageId = 2;
   private currentQuestionFromVoice = false;
@@ -201,7 +200,7 @@ export class TutorPanel implements OnDestroy {
     this.messages.update((items) => [...items, { id: this.nextMessageId++, role: 'student', text: question }]);
     this.pending.set(true);
     this.status.set('Consultando al tutor…');
-    const screenshotDataUrl = this.shareScreenshot() ? this.screenshot()?.() ?? undefined : undefined;
+    const sceneImages = this.sceneImages()?.() ?? [];
     this.tutorApi.ask({
       question,
       modelId: this.modelId(),
@@ -209,7 +208,7 @@ export class TutorPanel implements OnDestroy {
       ...(this.selectedNodePath() ? { selectedNodePath: this.selectedNodePath()! } : {}),
       sceneNodes: this.sceneNodes(),
       sceneParts: this.sceneParts(),
-      ...(screenshotDataUrl ? { screenshotDataUrl } : {}),
+      ...(sceneImages.length ? { sceneImages } : {}),
     }).subscribe({
       next: (answer) => {
         this.error.set('');

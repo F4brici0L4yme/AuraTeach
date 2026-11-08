@@ -69,7 +69,16 @@ fonts:
 
 ---
 
-<div class="split"><div class="split__text"><div class="eyebrow">Hecho para compartir</div><h2>Una experiencia para una pantalla y un grupo.</h2><ul class="bullets"><li>Proyección del modelo para que toda el aula observe.</li><li>Air mouse para navegar cuando no hay una computadora por estudiante.</li><li>Seguimiento de manos para señalar o manipular durante la exploración.</li><li>Preguntas en voz alta que abren conversación entre compañeros.</li></ul><div class="split__note">La tecnología como punto de encuentro alrededor de una pregunta.</div></div><div class="split__media media-panel"><img src="/assets/projection-demo.png" alt="Demostración de proyección interactiva sobre una superficie"/><span>Próximos pasos · proyectar la exploración sobre superficies del aula</span></div></div>
+<div class="projector-story">
+  <img class="projector-story__collage" src="/assets/proyeccion-superficies-collage.png" alt="Collage: un aula con proyector, una clase que anota sobre la proyección y estudiantes que interactúan con contenido proyectado en una mesa" />
+  <div class="projector-story__copy">
+    <div class="eyebrow">Diseñado para el aula que ya existe</div>
+    <h2>No hace falta una pantalla táctil.</h2>
+    <p>Con un proyector, una pared, una pizarra o una mesa pueden convertirse en una superficie compartida para explorar.</p>
+  </div>
+  <div class="projector-story__flow"><span>Un proyector disponible</span><b>→</b><span>La superficie del aula</span><b>→</b><span>Una exploración en grupo</span></div>
+  <div class="projector-story__note">AuraTeach busca aprovechar los recursos que la escuela ya tiene y adaptar la interacción al espacio.</div>
+</div>
 
 ---
 

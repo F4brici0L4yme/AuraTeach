@@ -32,7 +32,7 @@ import type { CanvasAssemblyAction, CanvasLocator } from './canvas-scene';
           [selectedNodePath]="selectedNodePath()"
           [sceneNodes]="tutorSceneNodes()"
           [sceneParts]="tutorSceneParts()"
-          [screenshot]="captureFrame"
+          [sceneImages]="captureSceneImages"
           (locator)="applyTutorLocator($event)"
           (sceneAction)="applyTutorSceneAction($event)"
         />
@@ -69,7 +69,7 @@ export class ExplorationPage implements OnDestroy {
   protected readonly canvasNotice = signal('');
   protected readonly selectedNodePath = signal<string | null>(null);
 
-  protected readonly captureFrame = (): string | null => this.viewport()?.captureSceneFrame() ?? null;
+  protected readonly captureSceneImages = () => this.viewport()?.captureSceneViews() ?? [];
 
   constructor() {
     const modelId = this.route.snapshot.paramMap.get('modelId');
